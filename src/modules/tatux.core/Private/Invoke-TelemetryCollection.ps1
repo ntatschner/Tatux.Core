@@ -1,6 +1,6 @@
 function Invoke-TelemetryCollection {
     param (
-        [CmdletBinding(HelpUri = 'https://pwsh.dev.tatux.co.uk/tatux.telemetry/docs/Invoke-TelemetryCollection.html')]
+        [CmdletBinding(HelpUri = 'https://pwsh.dev.tatux.co.uk/tatux.core/docs/Invoke-TelemetryCollection.html')]
 
         [string]$ModuleName = 'UnknownModule',
 
