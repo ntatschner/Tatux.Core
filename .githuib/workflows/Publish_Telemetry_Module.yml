@@ -1,0 +1,44 @@
+name: Test and Publish to PSGallery
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+    - 'src/modules/**'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'src/modules/**'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  SetUp:
+    runs-on: windows-latest
+    outputs:
+      module_directories: ${{ steps.modulepaths.outputs.module_directories }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get All Module Paths
+        id: modulepaths
+        shell: pwsh
+        run: |
+          $modulepaths = Get-ChildItem -Path ${{ github.workspace }}\src\modules\ -Directory
+          $outpaths = $modulepaths.FullName -join ','
+          echo "module_directories=$outpaths" >> $env:GITHUB_OUTPUT
+          if ($modulepaths.Count -eq 0) {
+            Write-Error "No modules found in src/modules"
+          }
+          Write-output "Module paths: $outpaths"
+
+  TestAndPublish:
+    needs: SetUp
+    uses: ntatschner/tatux_shared_workflows/.github/workflows/Publish_To_PSGallery.yml@main
+    with:
+      module_paths: ${{ needs.SetUp.outputs.module_directories }}
+    secrets:
+      api_key: ${{ secrets.API_KEY }}
