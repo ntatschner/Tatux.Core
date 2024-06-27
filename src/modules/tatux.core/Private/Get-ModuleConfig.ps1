@@ -1,5 +1,9 @@
 function Get-ModuleConfig {
     [OutputType([hashtable])]
+
+    param (
+        $PSCommandPath
+    )
     
     $ModulePath = $(Split-Path -Path (Split-Path -Path $PSCommandPath -Parent) -Parent)
     $ModuleName = Get-ChildItem -Path $ModulePath -Filter "*.psd1" -File | Select-Object -First 1 | Select-Object -ExpandProperty BaseName
