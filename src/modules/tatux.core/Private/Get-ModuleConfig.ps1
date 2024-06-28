@@ -2,10 +2,10 @@ function Get-ModuleConfig {
     [OutputType([hashtable])]
 
     param (
-        $PSCommandPath
+        $CommandPath
     )
     
-    $ModulePath = $(Split-Path -Path (Split-Path -Path $PSCommandPath -Parent) -Parent)
+    $ModulePath = $(Split-Path -Path (Split-Path -Path $CommandPath -Parent) -Parent)
     $ModuleName = Get-ChildItem -Path $ModulePath -Filter "*.psd1" -File | Select-Object -First 1 | Select-Object -ExpandProperty BaseName
     $UserPowerShellModuleConfigPath = Join-Path -Path $(Split-Path -Path $($env:PSModulePath -split ';' | ForEach-Object { if (($_ -match $([regex]::Escape($env:USERNAME))) -and ($_ -notmatch '\.')) {$_} }) -Parent) -ChildPath 'Config'
     $ModuleConfigPath = Join-Path -Path $UserPowerShellModuleConfigPath -ChildPath $ModuleName
