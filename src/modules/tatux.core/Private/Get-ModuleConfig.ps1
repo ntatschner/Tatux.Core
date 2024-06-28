@@ -3,7 +3,7 @@ function Get-ModuleConfig {
 
     param (
         [parameter(Mandatory)]
-        [ValidateNotNullOrWhiteSpace()]
+        [ValidateNotNullOrEmpty()]
         $CommandPath
     )
     
