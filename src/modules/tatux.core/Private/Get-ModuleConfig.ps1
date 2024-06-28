@@ -2,6 +2,7 @@ function Get-ModuleConfig {
     [OutputType([hashtable])]
 
     param (
+        [parameter(Mandatory)]
         $CommandPath
     )
     
