@@ -7,7 +7,7 @@ function Get-ModuleConfig {
         $CommandPath
     )
     try {
-        $ModulePath = Split-Path -Path $CommandPath -Parent
+        $ModulePath = $(Split-Path -Path (Split-Path -Path $CommandPath -Parent) -Parent)
         Write-Verbose "ModulePath: $ModulePath"
         $ModuleName = Get-ChildItem -Path $ModulePath -Filter "*.psd1" -File | Select-Object -First 1 | Select-Object -ExpandProperty BaseName
         Write-Verbose "ModuleName: $ModuleName"
@@ -32,7 +32,7 @@ function Get-ModuleConfig {
         $DefaultConfig.PSObject.Properties | ForEach-Object { $HashTable[$_.Name] = $_.Value }
         while ($null -eq (Get-ChildItem -Path $ModulePath -Filter "*.psd1" -File)) {
             $ModulePath = Split-Path -Path $ModulePath -Parent
-            Verbose "ModulePath: $ModulePath"
+            Write-Verbose "ModulePath: $ModulePath"
             if ($ModulePath -eq (Split-Path -Path $ModulePath -Parent)) {
                 Write-Error "No .psd1 file found in the directory tree."
                 return
