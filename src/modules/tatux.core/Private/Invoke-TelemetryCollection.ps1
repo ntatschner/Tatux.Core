@@ -49,7 +49,7 @@ function Invoke-TelemetryCollection {
             }
         }
         "End|Module-Load" {
-            Start-Job -Name "TC_Job_Trying_To_Be_Unique_9000" -ArgumentList $(Get-Variable -Name "GlobalExecutionDuration_$ExecutionID").Value -ScriptBlock {
+            Start-Job -Name "TC_Job_Trying_To_Be_Unique_9000" -ArgumentList $(Get-Variable -Name "GlobalExecutionDuration_$ExecutionID" -ErrorAction SilentlyContinue).Value -ScriptBlock {
                 param ($GlobalExecutionDuration)
                 $ExecutionDuration = [Int64]$($(New-TimeSpan -Start $GlobalExecutionDuration -End $(Get-Date)).TotalMilliseconds * 1e6)
                 $WebRequestArgs = @{
