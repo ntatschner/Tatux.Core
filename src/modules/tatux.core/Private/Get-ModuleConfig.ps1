@@ -50,7 +50,7 @@ function Get-ModuleConfig {
     else {
         $Config = Get-Content -Path $ModuleConfigFilePath | ConvertFrom-Json
         $DefaultConfig.PSObject.Properties | ForEach-Object {
-            if ($Config.PSObject.Properties -notcontains $_.Name) {
+            if ($Config.PSObject.Properties.Name -notcontains $_.Name) {
                 $Config | Add-Member -MemberType NoteProperty -Name $_.Name -Value $_.Value
             }
         }

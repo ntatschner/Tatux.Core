@@ -1,5 +1,5 @@
 @{
-ModuleVersion = '0.0.17'
+ModuleVersion = '0.0.18'
 
 GUID = 'a61ffd6a-dac4-4de4-a830-0e58a0535eaa'
 
