@@ -50,7 +50,7 @@ function Get-ModuleConfig {
     else {
         $Config = Get-Content -Path $ModuleConfigFilePath | ConvertFrom-Json
         $DefaultConfig.PSObject.Properties | ForEach-Object {
-            if (-not $Config.ContainsKey($_.Name)) {
+            if (-not $Config.PSObject.Properties -notcontains $_.Name) {
                 $Config.Add($_.Name, $_.Value)
             }
         }
