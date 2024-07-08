@@ -21,8 +21,10 @@ function Get-ModuleConfig {
         Write-Verbose "ModuleConfigPath: $ModuleConfigPath"
         $ModuleConfigFilePath = Join-Path -Path $ModuleConfigPath -ChildPath 'Module.Config.json'
         Write-Verbose "ModuleConfigFilePath: $ModuleConfigFilePath"
-        $ConfigDefaults = Join-Path -Path $(Split-Path -Path $PSScriptRoot -Parent) -ChildPath "\Config\Module.Defaults.json"
-        Write-Verbose "ConfigDefaults: $ConfigDefaults"
+        $ConfigDefaultsPath = Join-Path -Path $(Split-Path -Path $PSScriptRoot -Parent) -ChildPath "\Config\Module.Defaults.json"
+        Write-Verbose "ConfigDefaultsPath: $ConfigDefaultsPath"
+        $DefaultConfig = Get-Content -Path $ConfigDefaultsPath | ConvertFrom-Json
+        Write-Verbose "DefaultConfig: $DefaultConfig"
     }
     catch {
         Write-Error "CommandPath: $($CommandPath)`nError: `n$($_)`n Invocation $($_.InvocationInfo.ScriptLineNumber) $($_.InvocationInfo.ScriptName)"
@@ -30,18 +32,8 @@ function Get-ModuleConfig {
     }
     # Test to see if module config JSON exists and create it if it doesn't
     if (-not (Test-Path -Path $ModuleConfigFilePath)) {
-        $DefaultConfig = Get-Content -Path $ConfigDefaults | ConvertFrom-Json
-        Write-Verbose "DefaultConfig: $DefaultConfig"
         $HashTable = @{}
         $DefaultConfig.PSObject.Properties | ForEach-Object { $HashTable[$_.Name] = $_.Value }
-        while ($null -eq (Get-ChildItem -Path $ModulePath -Filter "*.psd1" -File)) {
-            $ModulePath = Split-Path -Path $ModulePath -Parent
-            Write-Verbose "ModulePath: $ModulePath"
-            if ($ModulePath -eq (Split-Path -Path $ModulePath -Parent)) {
-                Write-Error "No .psd1 file found in the directory tree."
-                return
-            }
-        }
         $HashTable.Add('ModuleName', $ModuleName)
         $HashTable.Add('ModulePath', $ModulePath)
         $HashTable.Add('ModuleConfigPath', $ModuleConfigPath)
@@ -57,6 +49,11 @@ function Get-ModuleConfig {
     }
     else {
         $Config = Get-Content -Path $ModuleConfigFilePath | ConvertFrom-Json
+        $DefaultConfig.PSObject.Properties | ForEach-Object {
+            if (-not $Config.ContainsKey($_.Name)) {
+                $Config.Add($_.Name, $_.Value)
+            }
+        }
         if ($Config.ModulePath -ne $ModulePath) {
             $Config.ModulePath = $ModulePath
             $Config | ConvertTo-Json | Set-Content -Path $ModuleConfigFilePath -Force -Confirm:$false
