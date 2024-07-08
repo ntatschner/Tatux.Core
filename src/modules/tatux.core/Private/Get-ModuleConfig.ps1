@@ -50,8 +50,8 @@ function Get-ModuleConfig {
     else {
         $Config = Get-Content -Path $ModuleConfigFilePath | ConvertFrom-Json
         $DefaultConfig.PSObject.Properties | ForEach-Object {
-            if (-not $Config.PSObject.Properties -notcontains $_.Name) {
-                $Config.Add($_.Name, $_.Value)
+            if ($Config.PSObject.Properties -notcontains $_.Name) {
+                $Config | Add-Member -MemberType NoteProperty -Name $_.Name -Value $_.Value
             }
         }
         if ($Config.ModulePath -ne $ModulePath) {
