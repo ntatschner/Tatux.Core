@@ -9,11 +9,11 @@ function Get-ModuleConfig {
     try {
         $ModulePath = $(Split-Path -Path (Split-Path -Path $CommandPath -Parent) -Parent)
         if ([string]::IsNullOrEmpty($ModulePath)) {
-            Write-Error "ModulePAth is empty or null."
+            Write-Error "ModulePath is empty or null."
             throw
         }
         Write-Verbose "ModulePath: $ModulePath"
-        $ModuleName = Get-ChildItem -Path $ModulePath -Filter "*.psd1" -File | Select-Object -First 1 | Select-Object -ExpandProperty BaseName
+        $ModuleName = Get-ChildItem -Path $CommandPath -Filter "*.psd1" -File | Select-Object -First 1 | Select-Object -ExpandProperty BaseName
         Write-Verbose "ModuleName: $ModuleName"
         $UserPowerShellModuleConfigPath = Join-Path -Path $(Split-Path -Path $($env:PSModulePath -split ';' | ForEach-Object { if (($_ -match $([regex]::Escape($env:USERNAME))) -and ($_ -notmatch '\.')) { $_ } }) -Parent) -ChildPath 'Config'
         Write-Verbose "UserPowerShellModuleConfigPath: $UserPowerShellModuleConfigPath"
