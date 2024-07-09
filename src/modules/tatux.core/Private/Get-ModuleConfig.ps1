@@ -18,7 +18,7 @@ function Get-ModuleConfig {
             $CommandPath = $ParentPath
         }
 
-        $ModulePath = $(Split-Path -Path (Split-Path -Path $CommandPath -Parent) -Parent)
+        $ModulePath = $CommandPath
         if ([string]::IsNullOrEmpty($ModulePath)) {
             Write-Error "ModulePath is empty or null."
             throw
