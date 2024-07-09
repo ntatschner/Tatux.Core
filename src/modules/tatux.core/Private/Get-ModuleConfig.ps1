@@ -22,6 +22,7 @@ function Get-ModuleConfig {
             $BaseCommandPath = $ParentPath
         }
         $ModuleFilePath = Join-Path -Path $BaseCommandPath -ChildPath $(Split-Path -Path $CommandPath -Leaf)
+        Write-Verbose "ModuleFilePath: $ModuleFilePath"
         $ModulePath = Split-Path -Path $ModuleFilePath -Parent
         if ([string]::IsNullOrEmpty($ModulePath)) {
             Write-Error "ModulePath is empty or null."
