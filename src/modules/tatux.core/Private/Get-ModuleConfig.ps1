@@ -65,6 +65,20 @@ function Get-ModuleConfig {
                 $Config | Add-Member -MemberType NoteProperty -Name $_.Name -Value $_.Value
             }
         }
+        # Update Module Path if it has changed
+        if ($(Get-Item -Path $CommandPath).Name -like "*.psd1") {
+            $PSD1File = $CommandPath
+        }
+        else {
+            $PSD1File = Get-ChildItem -Path $CommandPath -Filter *.psd1 -Recurse | Select-Object -First 1
+
+        }
+        $CurrentlyLoadedModuleVersion = (Import-PowerShellDataFile -Path $PSD1File).ModuleVersion
+        if ($Config.ModuleVersion -ne $CurrentlyLoadedModuleVersion) {
+            $Config.ModuleVersion = $CurrentlyLoadedModuleVersion
+            $Config | ConvertTo-Json | Set-Content -Path $ModuleConfigFilePath -Force -Confirm:$false
+            $Config = Get-Content -Path $ModuleConfigFilePath | ConvertFrom-Json
+        }
         if ($Config.ModulePath -ne $ModulePath) {
             $Config.ModulePath = $ModulePath
             $Config | ConvertTo-Json | Set-Content -Path $ModuleConfigFilePath -Force -Confirm:$false
