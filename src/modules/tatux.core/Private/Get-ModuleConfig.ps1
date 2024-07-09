@@ -7,6 +7,17 @@ function Get-ModuleConfig {
         $CommandPath
     )
     try {
+        # Recursively step back through the CommandPath to find the module path that contains the module manifest file and get the module base path and module name
+        while (-not (Test-Path -Path $CommandPath -Filter '*.psd1')) {
+            $ParentPath = Split-Path -Path $CommandPath -Parent
+            if ($ParentPath -eq $CommandPath) {
+                # Break the loop if the parent path is the same as the current path,
+                # indicating that we've reached the root directory
+                break
+            }
+            $CommandPath = $ParentPath
+        }
+
         $ModulePath = $(Split-Path -Path (Split-Path -Path $CommandPath -Parent) -Parent)
         if ([string]::IsNullOrEmpty($ModulePath)) {
             Write-Error "ModulePath is empty or null."
