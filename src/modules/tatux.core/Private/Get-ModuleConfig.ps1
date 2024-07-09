@@ -8,10 +8,13 @@ function Get-ModuleConfig {
     )
     try {
         $BaseCommandPath = Split-Path -Path $CommandPath -Parent
+        Write-Verbose "BaseCommandPath: $BaseCommandPath"
         # Recursively step back through the CommandPath to find the module path that contains the module manifest file and get the module base path and module name
         while (-not (Test-Path -Path $BaseCommandPath -Filter *.psd1)) {
             $ParentPath = Split-Path -Path $BaseCommandPath -Parent
+            Write-Verbose "ParentPath: $ParentPath"
             if ($ParentPath -eq $BaseCommandPath) {
+                Write-Verbose "ParentPath: $ParentPath is the same as BaseCommandPath: $BaseCommandPath"
                 # Break the loop if the parent path is the same as the current path,
                 # indicating that we've reached the root directory
                 break
