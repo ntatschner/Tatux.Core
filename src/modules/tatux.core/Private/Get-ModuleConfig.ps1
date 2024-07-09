@@ -56,7 +56,7 @@ function Get-ModuleConfig {
         $HashTable.Add('ModuleVersion', $ModuleVersion)
         $HashTable.Add('ModuleConfigPath', $ModuleConfigPath)
         $HashTable.Add('ModuleConfigFilePath', $ModuleConfigFilePath)
-        $HashTable | ConvertTo-Json | Set-Content -Path $ModuleConfigFilePath -Confirm:$false
+        New-Item -Path $ModuleConfigFilePath -ItemType File -Value $($HashTable | ConvertTo-Json) -Confirm:$false
     }
     else {
         $Config = Get-Content -Path $ModuleConfigFilePath | ConvertFrom-Json
