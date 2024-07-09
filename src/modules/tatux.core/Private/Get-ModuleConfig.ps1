@@ -22,6 +22,7 @@ function Get-ModuleConfig {
             $BaseCommandPath = $ParentPath
         }
         $ModuleFilePath = Join-Path -Path $BaseCommandPath -ChildPath $(Split-Path -Path $CommandPath -Leaf)
+        $ModuleVersion = (Import-PowerShellDataFile -Path $($ModuleFilePath.Replace('.psm1','.psd1'))).ModuleVersion
         Write-Verbose "ModuleFilePath: $ModuleFilePath"
         $ModulePath = Split-Path -Path $ModuleFilePath -Parent
         if ([string]::IsNullOrEmpty($ModulePath)) {
@@ -52,6 +53,7 @@ function Get-ModuleConfig {
         $DefaultConfig.PSObject.Properties | ForEach-Object { $HashTable[$_.Name] = $_.Value }
         $HashTable.Add('ModuleName', $ModuleName)
         $HashTable.Add('ModulePath', $ModulePath)
+        $HashTable.Add('ModuleVersion', $ModuleVersion)
         $HashTable.Add('ModuleConfigPath', $ModuleConfigPath)
         $HashTable.Add('ModuleConfigFilePath', $ModuleConfigFilePath)
         Set-ModuleConfig @HashTable
@@ -71,7 +73,7 @@ function Get-ModuleConfig {
             }
         }
         # Update Module Path if it has changed
-        $CurrentlyLoadedModuleVersion = (Import-PowerShellDataFile -Path $ModuleFilePath).ModuleVersion
+        $CurrentlyLoadedModuleVersion = (Import-PowerShellDataFile -Path $($ModuleFilePath.Replace('.psm1','.psd1'))).ModuleVersion
         if ($Config.ModuleVersion -ne $CurrentlyLoadedModuleVersion) {
             $Config.ModuleVersion = $CurrentlyLoadedModuleVersion
             $Config | ConvertTo-Json | Set-Content -Path $ModuleConfigFilePath -Force -Confirm:$false
