@@ -7,17 +7,18 @@ function Get-ModuleConfig {
         $CommandPath
     )
     try {
+        $BaseCommandPath = Split-Path -Path $CommandPath -Parent
         # Recursively step back through the CommandPath to find the module path that contains the module manifest file and get the module base path and module name
-        while (-not (Test-Path -Path $CommandPath -Filter *.psd1)) {
-            $ParentPath = Split-Path -Path $CommandPath -Parent
-            if ($ParentPath -eq $CommandPath) {
+        while (-not (Test-Path -Path $BaseCommandPath -Filter *.psd1)) {
+            $ParentPath = Split-Path -Path $BaseCommandPath -Parent
+            if ($ParentPath -eq $BaseCommandPath) {
                 # Break the loop if the parent path is the same as the current path,
                 # indicating that we've reached the root directory
                 break
             }
-            $CommandPath = $ParentPath
+            $BaseCommandPath = $ParentPath
         }
-
+        $ModuleFilePath = Join-Path -Path $BaseCommandPath -ChildPath $(Split-Path -Path $CommandPath -Leaf)
         $ModulePath = Split-Path -Path $CommandPath -Parent
         if ([string]::IsNullOrEmpty($ModulePath)) {
             Write-Error "ModulePath is empty or null."
@@ -66,14 +67,7 @@ function Get-ModuleConfig {
             }
         }
         # Update Module Path if it has changed
-        if ($(Get-Item -Path $CommandPath).Name -like "*.psd1") {
-            $PSD1File = $CommandPath
-        }
-        else {
-            $PSD1File = Get-ChildItem -Path $CommandPath -Filter *.psd1 -Recurse | Select-Object -First 1
-
-        }
-        $CurrentlyLoadedModuleVersion = (Import-PowerShellDataFile -Path $PSD1File).ModuleVersion
+        $CurrentlyLoadedModuleVersion = (Import-PowerShellDataFile -Path $ModuleFilePath).ModuleVersion
         if ($Config.ModuleVersion -ne $CurrentlyLoadedModuleVersion) {
             $Config.ModuleVersion = $CurrentlyLoadedModuleVersion
             $Config | ConvertTo-Json | Set-Content -Path $ModuleConfigFilePath -Force -Confirm:$false
