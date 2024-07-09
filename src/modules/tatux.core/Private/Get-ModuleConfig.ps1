@@ -56,14 +56,7 @@ function Get-ModuleConfig {
         $HashTable.Add('ModuleVersion', $ModuleVersion)
         $HashTable.Add('ModuleConfigPath', $ModuleConfigPath)
         $HashTable.Add('ModuleConfigFilePath', $ModuleConfigFilePath)
-        Set-ModuleConfig @HashTable
-        try {
-            Get-ModuleConfig -CommandPath $CommandPath -ErrorAction Stop
-        }
-        catch {
-            Write-Error "CommandPath: $($CommandPath)`nError: `n$($_)`n Invocation $($_.InvocationInfo.ScriptLineNumber) $($_.InvocationInfo.ScriptName)"
-            return
-        }
+        $HashTable | ConvertTo-Json | Set-Content -Path $ModuleConfigFilePath -Confirm:$false
     }
     else {
         $Config = Get-Content -Path $ModuleConfigFilePath | ConvertFrom-Json
