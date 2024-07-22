@@ -17,7 +17,9 @@ function Set-ModuleConfig {
         [Parameter(HelpMessage = "Path of the module.")]
         [string]$ModulePath,
 
-        [switch]$BasicTelemetry
+        [switch]$BasicTelemetry,
+
+        [switch]$BetaFeatureWarning
     )
 
     # Test to see if module config JSON exists and create it if it doesn't
