@@ -1,5 +1,5 @@
 @{
-ModuleVersion = '0.0.32'
+ModuleVersion = '0.0.34'
 
 GUID = 'a61ffd6a-dac4-4de4-a830-0e58a0535eaa'
 
@@ -22,6 +22,8 @@ CmdletsToExport = '*'
 VariablesToExport = '*'
 
 AliasesToExport = '*'
+
+RequiredModules = @("Microsoft.PowerShell.PSResourceGet")
 
 PrivateData = @{
     PSData = @{

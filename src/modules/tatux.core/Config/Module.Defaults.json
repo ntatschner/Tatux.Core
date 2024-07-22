@@ -1,3 +1,4 @@
 {
-    "UpdateWarning": "True"
+    "UpdateWarning": "True",
+    "BetaFeatureWarning": "True"
 }
