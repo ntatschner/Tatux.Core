@@ -7,8 +7,9 @@ function Get-ModuleConfig {
         $CommandPath
     )
     try {
+        Write-Verbose "CommandPath: $CommandPath"
         $BaseCommandPath = Split-Path -Path $CommandPath -Parent
-        Write-Verbose "BaseCommandPath: $BaseCommandPath"
+        Write-Verbose "Initial BaseCommandPath: $BaseCommandPath"
         # Recursively step back through the CommandPath to find the module path that contains the module manifest file and get the module base path and module name
         while (-not (Get-ChildItem -Path $BaseCommandPath -Filter *.psd1)) {
             $ParentPath = Split-Path -Path $BaseCommandPath -Parent
@@ -20,17 +21,18 @@ function Get-ModuleConfig {
                 break
             }
             $BaseCommandPath = $ParentPath
+            Write-Verbose "Recursive BaseCommandPath: $BaseCommandPath"
         }
-        $ModuleFilePath = Join-Path -Path $BaseCommandPath -ChildPath $(Split-Path -Path $CommandPath -Leaf)
-        $ModuleVersion = (Import-PowerShellDataFile -Path $($ModuleFilePath.Replace('.psm1','.psd1'))).ModuleVersion
+        $ModuleFilePath = Join-Path -Path $BaseCommandPath -ChildPath $(Split-Path -Path $(Get-ChildItem -Path $BaseCommandPath -Filter *.psd1 | Select-Object -First 1) -Leaf)
         Write-Verbose "ModuleFilePath: $ModuleFilePath"
+        $ModuleVersion = (Import-PowerShellDataFile -Path $($ModuleFilePath.Replace('.psm1','.psd1'))).ModuleVersion
         $ModulePath = Split-Path -Path $ModuleFilePath -Parent
         if ([string]::IsNullOrEmpty($ModulePath)) {
             Write-Error "ModulePath is empty or null."
             throw
         }
         Write-Verbose "ModulePath: $ModulePath"
-        $ModuleName = Get-ChildItem -Path $CommandPath -Filter "*.psd1" -File | Select-Object -First 1 | Select-Object -ExpandProperty BaseName
+        $ModuleName = Get-ChildItem -Path $ModuleFilePath -Filter "*.psd1" -File | Select-Object -First 1 | Select-Object -ExpandProperty BaseName
         Write-Verbose "ModuleName: $ModuleName"
         $UserPowerShellModuleConfigPath = Join-Path -Path $(Split-Path -Path $($env:PSModulePath -split ';' | ForEach-Object { if (($_ -match $([regex]::Escape($env:USERNAME))) -and ($_ -notmatch '\.')) { $_ } }) -Parent) -ChildPath 'Config'
         Write-Verbose "UserPowerShellModuleConfigPath: $UserPowerShellModuleConfigPath"
